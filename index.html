@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار كورن فيري المتقدم</title>
+    <style>
+        /* أنماط عامة */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* محتوى الصفحة */
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        /* عداد الوقت */
+        .timer-container {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        /* أنماط الأسئلة */
+        .question {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .question h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .options {
+            margin: 15px 0;
+        }
+        
+        .option {
+            margin: 8px 0;
+            padding: 10px;
+            background-color: #eaf2f8;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #d4e6f1;
+        }
+        
+        .option.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .option.correct {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .option.incorrect {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .answer {
+            background-color: #e8f8f5;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #2ecc71;
+            display: none;
+        }
+        
+        .show-answer {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .show-answer:hover {
+            background-color: #2980b9;
+        }
+        
+        /* قسم المعلومات */
+        .section-info {
+            background-color: #f0f7fd;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        
+        /* تذييل الصفحة */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #2c3e50;
+            color: white;
+            margin-top: 40px;
+        }
+        
+        /* زر الانتقال بين الأسئلة */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .nav-button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        /* نتائج الاختبار */
+        .results-container {
+            display: none;
+            background-color: #e8f8f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .results-container h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2ecc71;
+            margin: 15px 0;
+        }
+        
+        .print-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 1em;
+        }
+        
+        .print-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        /* شريط التقدم */
+        .progress-container {
+            width: 100%;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #3498db;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>اختبار كورن فيري المتقدم</h1>
+        
+        <!-- عداد الوقت -->
+        <div class="timer-container">
+            الوقت المتبقي: <span id="timer">30:00</span>
+        </div>
+        
+        <!-- شريط التقدم -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div class="section-info">
+            <h2>اختبارات القدرات المعرفية (Cognitive Ability)</h2>
+            <p>هذا الجزء يقيس قدرتك على التحليل المنطقي وحل المشكلات باستخدام الأرقام والأنماط.</p>
+            <p>الوقت المخصص لهذا القسم: 30 دقيقة</p>
+        </div>
+
+<!-- السؤال 1 -->
+<div class="question" id="q1" style="display:none;">
+    <h3>السؤال 1: ما هو ناتج 15 × 3؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 1, 'a')">أ) 45</div>
+        <div class="option" onclick="selectOption(this, 1, 'b')">ؤ) 35</div>
+        <div class="option" onclick="selectOption(this, 1, 'c')">إ) 50</div>
+        <div class="option" onclick="selectOption(this, 1, 'd')">ئ) 40</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(1)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer1">
+        <p><strong>الإجابة الصحيحة:</strong> a) 45</p>
+        <p><strong>الشرح:</strong></p>
+        <p>15 × 3 = 45</p>
+    </div>
+</div>
+
+<!-- السؤال 2 -->
+<div class="question" id="q2" style="display:none;">
+    <h3>السؤال 2: إذا كان سعر القلم 5 ريالات وسعر الدفتر 12 ريالاً، كم يكلف شراء 3 أقلام ودفترين؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 2, 'a')">أ) 29</div>
+        <div class="option" onclick="selectOption(this, 2, 'b')">ؤ) 34</div>
+        <div class="option" onclick="selectOption(this, 2, 'c')">إ) 39</div>
+        <div class="option" onclick="selectOption(this, 2, 'd')">ئ) 31</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(2)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer2">
+        <p><strong>الإجابة الصحيحة:</strong> c) 39</p>
+        <p><strong>الشرح:</strong></p>
+        <p>3×5=15 و 2×12=24، 15+24=39</p>
+    </div>
+</div>
+
+<!-- السؤال 3 -->
+<div class="question" id="q3" style="display:none;">
+    <h3>السؤال 3: كم عدد الزوايا في الشكل الخماسي؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 3, 'a')">أ) 4</div>
+        <div class="option" onclick="selectOption(this, 3, 'b')">ؤ) 5</div>
+        <div class="option" onclick="selectOption(this, 3, 'c')">إ) 6</div>
+        <div class="option" onclick="selectOption(this, 3, 'd')">ئ) 3</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(3)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer3">
+        <p><strong>الإجابة الصحيحة:</strong> b) 5</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الشكل الخماسي يحتوي على 5 زوايا.</p>
+    </div>
+</div>
+
+<!-- السؤال 4 -->
+<div class="question" id="q4" style="display:none;">
+    <h3>السؤال 4: إذا كانت الساعة الآن 3:15، كم ستكون بعد 2.5 ساعة؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 4, 'a')">أ) 5:45</div>
+        <div class="option" onclick="selectOption(this, 4, 'b')">ؤ) 6:00</div>
+        <div class="option" onclick="selectOption(this, 4, 'c')">إ) 5:15</div>
+        <div class="option" onclick="selectOption(this, 4, 'd')">ئ) 4:45</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(4)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer4">
+        <p><strong>الإجابة الصحيحة:</strong> a) 5:45</p>
+        <p><strong>الشرح:</strong></p>
+        <p>3:15 + 2:30 = 5:45</p>
+    </div>
+</div>
+
+<!-- السؤال 5 -->
+<div class="question" id="q5" style="display:none;">
+    <h3>السؤال 5: إذا ركض أحمد 6 كيلومترات في 30 دقيقة، كم كانت سرعته بالكيلومتر في الساعة؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 5, 'a')">أ) 10</div>
+        <div class="option" onclick="selectOption(this, 5, 'b')">ؤ) 8</div>
+        <div class="option" onclick="selectOption(this, 5, 'c')">إ) 12</div>
+        <div class="option" onclick="selectOption(this, 5, 'd')">ئ) 6</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(5)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer5">
+        <p><strong>الإجابة الصحيحة:</strong> c) 12</p>
+        <p><strong>الشرح:</strong></p>
+        <p>6 كم في نصف ساعة = 12 كم في ساعة.</p>
+    </div>
+</div>
+
+<!-- السؤال 6 -->
+<div class="question" id="q6" style="display:none;">
+    <h3>السؤال 6: أي من الأشكال التالية لا ينتمي إلى المجموعة؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 6, 'a')">أ) ◼</div>
+        <div class="option" onclick="selectOption(this, 6, 'b')">ؤ) ◯</div>
+        <div class="option" onclick="selectOption(this, 6, 'c')">إ) ◻</div>
+        <div class="option" onclick="selectOption(this, 6, 'd')">ئ) □</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(6)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer6">
+        <p><strong>الإجابة الصحيحة:</strong> b) ◯</p>
+        <p><strong>الشرح:</strong></p>
+        <p>جميع الأشكال مربعة ما عدا الدائرة ◯.</p>
+    </div>
+</div>
+
+<!-- السؤال 7 -->
+<div class="question" id="q7" style="display:none;">
+    <h3>السؤال 7: إذا كانت كل القطط حيوانات، وبعض الحيوانات أليفة، هل كل القطط أليفة؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 7, 'a')">أ) نعم</div>
+        <div class="option" onclick="selectOption(this, 7, 'b')">ؤ) لا</div>
+        <div class="option" onclick="selectOption(this, 7, 'c')">إ) ربما</div>
+        <div class="option" onclick="selectOption(this, 7, 'd')">ئ) لا يمكن تحديد ذلك</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(7)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer7">
+        <p><strong>الإجابة الصحيحة:</strong> d) لا يمكن تحديد ذلك</p>
+        <p><strong>الشرح:</strong></p>
+        <p>المعطيات لا تؤكد أن جميع القطط أليفة.</p>
+    </div>
+</div>
+
+<!-- السؤال 8 -->
+<div class="question" id="q8" style="display:none;">
+    <h3>السؤال 8: ما هو الرقم الناقص في السلسلة: 2، 4، __، 16، 32؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 8, 'a')">أ) 6</div>
+        <div class="option" onclick="selectOption(this, 8, 'b')">ؤ) 8</div>
+        <div class="option" onclick="selectOption(this, 8, 'c')">إ) 10</div>
+        <div class="option" onclick="selectOption(this, 8, 'd')">ئ) 12</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(8)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer8">
+        <p><strong>الإجابة الصحيحة:</strong> b) 8</p>
+        <p><strong>الشرح:</strong></p>
+        <p>2×2=4, 4×2=8, 8×2=16, 16×2=32</p>
+    </div>
+</div>
+
+<!-- السؤال 9 -->
+<div class="question" id="q9" style="display:none;">
+    <h3>السؤال 9: إذا كان أحمد أطول من سالم، وسالم أطول من ماجد، فمن هو الأطول؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 9, 'a')">أ) ماجد</div>
+        <div class="option" onclick="selectOption(this, 9, 'b')">ؤ) سالم</div>
+        <div class="option" onclick="selectOption(this, 9, 'c')">إ) أحمد</div>
+        <div class="option" onclick="selectOption(this, 9, 'd')">ئ) غير معروف</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(9)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer9">
+        <p><strong>الإجابة الصحيحة:</strong> c) أحمد</p>
+        <p><strong>الشرح:</strong></p>
+        <p>أحمد > سالم > ماجد</p>
+    </div>
+</div>
+
+<!-- السؤال 10 -->
+<div class="question" id="q10" style="display:none;">
+    <h3>السؤال 10: ما هو الرقم المختلف: 3، 6، 9، 11، 12</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 10, 'a')">أ) 6</div>
+        <div class="option" onclick="selectOption(this, 10, 'b')">ؤ) 11</div>
+        <div class="option" onclick="selectOption(this, 10, 'c')">إ) 9</div>
+        <div class="option" onclick="selectOption(this, 10, 'd')">ئ) 12</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(10)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer10">
+        <p><strong>الإجابة الصحيحة:</strong> b) 11</p>
+        <p><strong>الشرح:</strong></p>
+        <p>جميع الأرقام تقبل القسمة على 3 ما عدا 11</p>
+    </div>
+</div>
+
+<!-- السؤال 11 -->
+<div class="question" id="q11" style="display:none;">
+    <h3>السؤال 11: ما الكلمة المختلفة: سيارة، شاحنة، طائرة، دراجة</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 11, 'a')">أ) سيارة</div>
+        <div class="option" onclick="selectOption(this, 11, 'b')">ؤ) شاحنة</div>
+        <div class="option" onclick="selectOption(this, 11, 'c')">إ) طائرة</div>
+        <div class="option" onclick="selectOption(this, 11, 'd')">ئ) دراجة</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(11)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer11">
+        <p><strong>الإجابة الصحيحة:</strong> c) طائرة</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الطائرة تختلف لأنها تطير.</p>
+    </div>
+</div>
+
+<!-- السؤال 12 -->
+<div class="question" id="q12" style="display:none;">
+    <h3>السؤال 12: ما مرادف كلمة 'سعيد'؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 12, 'a')">أ) حزين</div>
+        <div class="option" onclick="selectOption(this, 12, 'b')">ؤ) فرح</div>
+        <div class="option" onclick="selectOption(this, 12, 'c')">إ) غاضب</div>
+        <div class="option" onclick="selectOption(this, 12, 'd')">ئ) قلق</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(12)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer12">
+        <p><strong>الإجابة الصحيحة:</strong> b) فرح</p>
+        <p><strong>الشرح:</strong></p>
+        <p>مرادف سعيد هو فرح.</p>
+    </div>
+</div>
+
+<!-- السؤال 13 -->
+<div class="question" id="q13" style="display:none;">
+    <h3>السؤال 13: ضد كلمة 'نشيط'؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 13, 'a')">أ) كسول</div>
+        <div class="option" onclick="selectOption(this, 13, 'b')">ؤ) سريع</div>
+        <div class="option" onclick="selectOption(this, 13, 'c')">إ) مرح</div>
+        <div class="option" onclick="selectOption(this, 13, 'd')">ئ) مجهد</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(13)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer13">
+        <p><strong>الإجابة الصحيحة:</strong> a) كسول</p>
+        <p><strong>الشرح:</strong></p>
+        <p>عكس نشيط هو كسول.</p>
+    </div>
+</div>
+
+<!-- السؤال 14 -->
+<div class="question" id="q14" style="display:none;">
+    <h3>السؤال 14: ما الكلمة التي تربط الكلمات: كتاب، قلم، دفتر؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 14, 'a')">أ) مدرسة</div>
+        <div class="option" onclick="selectOption(this, 14, 'b')">ؤ) ورق</div>
+        <div class="option" onclick="selectOption(this, 14, 'c')">إ) تعليم</div>
+        <div class="option" onclick="selectOption(this, 14, 'd')">ئ) مكتب</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(14)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer14">
+        <p><strong>الإجابة الصحيحة:</strong> c) تعليم</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الكلمة الشاملة هي تعليم.</p>
+    </div>
+</div>
+
+<!-- السؤال 15 -->
+<div class="question" id="q15" style="display:none;">
+    <h3>السؤال 15: أي من الكلمات تعني نفس معنى 'يبتكر'؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 15, 'a')">أ) يقلد</div>
+        <div class="option" onclick="selectOption(this, 15, 'b')">ؤ) يخترع</div>
+        <div class="option" onclick="selectOption(this, 15, 'c')">إ) ينسخ</div>
+        <div class="option" onclick="selectOption(this, 15, 'd')">ئ) يترك</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(15)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer15">
+        <p><strong>الإجابة الصحيحة:</strong> b) يخترع</p>
+        <p><strong>الشرح:</strong></p>
+        <p>يبتكر = يخترع.</p>
+    </div>
+</div>
+
+<!-- السؤال 16 -->
+<div class="question" id="q16" style="display:none;">
+    <h3>السؤال 16: ما جمع كلمة 'وردة'؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 16, 'a')">أ) ورد</div>
+        <div class="option" onclick="selectOption(this, 16, 'b')">ؤ) ورود</div>
+        <div class="option" onclick="selectOption(this, 16, 'c')">إ) أزهار</div>
+        <div class="option" onclick="selectOption(this, 16, 'd')">ئ) نبات</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(16)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer16">
+        <p><strong>الإجابة الصحيحة:</strong> b) ورود</p>
+        <p><strong>الشرح:</strong></p>
+        <p>جمع وردة هو ورود.</p>
+    </div>
+</div>
+
+<!-- السؤال 17 -->
+<div class="question" id="q17" style="display:none;">
+    <h3>السؤال 17: ما مفرد كلمة 'جبال'؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 17, 'a')">أ) قمة</div>
+        <div class="option" onclick="selectOption(this, 17, 'b')">ؤ) صخر</div>
+        <div class="option" onclick="selectOption(this, 17, 'c')">إ) جبل</div>
+        <div class="option" onclick="selectOption(this, 17, 'd')">ئ) مرتفعات</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(17)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer17">
+        <p><strong>الإجابة الصحيحة:</strong> c) جبل</p>
+        <p><strong>الشرح:</strong></p>
+        <p>مفرد جبال هو جبل.</p>
+    </div>
+</div>
+
+<!-- السؤال 18 -->
+<div class="question" id="q18" style="display:none;">
+    <h3>السؤال 18: ما هو ترتيب الحروف في كلمة 'سلام' من النهاية للبداية؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 18, 'a')">أ) مالس</div>
+        <div class="option" onclick="selectOption(this, 18, 'b')">ؤ) لامس</div>
+        <div class="option" onclick="selectOption(this, 18, 'c')">إ) ملاس</div>
+        <div class="option" onclick="selectOption(this, 18, 'd')">ئ) سامل</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(18)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer18">
+        <p><strong>الإجابة الصحيحة:</strong> a) مالس</p>
+        <p><strong>الشرح:</strong></p>
+        <p>عكس سلام = مالس.</p>
+    </div>
+</div>
+
+<!-- السؤال 19 -->
+<div class="question" id="q19" style="display:none;">
+    <h3>السؤال 19: أكمل الجملة: السماء __ صافية</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 19, 'a')">أ) هي</div>
+        <div class="option" onclick="selectOption(this, 19, 'b')">ؤ) كان</div>
+        <div class="option" onclick="selectOption(this, 19, 'c')">إ) تبدو</div>
+        <div class="option" onclick="selectOption(this, 19, 'd')">ئ) ليست</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(19)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer19">
+        <p><strong>الإجابة الصحيحة:</strong> c) تبدو</p>
+        <p><strong>الشرح:</strong></p>
+        <p>السماء تبدو صافية.</p>
+    </div>
+</div>
+
+<!-- السؤال 20 -->
+<div class="question" id="q20" style="display:none;">
+    <h3>السؤال 20: اختر الكلمة الأنسب: الكتاب __ المكتب</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 20, 'a')">أ) على</div>
+        <div class="option" onclick="selectOption(this, 20, 'b')">ؤ) في</div>
+        <div class="option" onclick="selectOption(this, 20, 'c')">إ) تحت</div>
+        <div class="option" onclick="selectOption(this, 20, 'd')">ئ) بين</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(20)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer20">
+        <p><strong>الإجابة الصحيحة:</strong> b) في</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الكتاب في المكتب.</p>
+    </div>
+</div>
+
+<!-- السؤال 21 -->
+<div class="question" id="q21" style="display:none;">
+    <h3>السؤال 21: عندما تواجه ضغط العمل، كيف تتصرف غالبًا؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 21, 'a')">أ) أطلب المساعدة</div>
+        <div class="option" onclick="selectOption(this, 21, 'b')">ؤ) أنسحب</div>
+        <div class="option" onclick="selectOption(this, 21, 'c')">إ) أرتب أولوياتي</div>
+        <div class="option" onclick="selectOption(this, 21, 'd')">ئ) أتجاهل الأمر</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(21)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer21">
+        <p><strong>الإجابة الصحيحة:</strong> c) أرتب أولوياتي</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الأنسب هو ترتيب الأولويات.</p>
+    </div>
+</div>
+
+<!-- السؤال 22 -->
+<div class="question" id="q22" style="display:none;">
+    <h3>السؤال 22: ما الذي يحفزك أكثر في العمل؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 22, 'a')">أ) الراتب</div>
+        <div class="option" onclick="selectOption(this, 22, 'b')">ؤ) الترقية</div>
+        <div class="option" onclick="selectOption(this, 22, 'c')">إ) التقدير</div>
+        <div class="option" onclick="selectOption(this, 22, 'd')">ئ) الاستقرار</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(22)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer22">
+        <p><strong>الإجابة الصحيحة:</strong> c) التقدير</p>
+        <p><strong>الشرح:</strong></p>
+        <p>التقدير غالبًا ما يكون دافعًا داخليًا.</p>
+    </div>
+</div>
+
+<!-- السؤال 23 -->
+<div class="question" id="q23" style="display:none;">
+    <h3>السؤال 23: عندما تعمل ضمن فريق، فأنت عادةً:</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 23, 'a')">أ) تقود الفريق</div>
+        <div class="option" onclick="selectOption(this, 23, 'b')">ؤ) تتعاون بفعالية</div>
+        <div class="option" onclick="selectOption(this, 23, 'c')">إ) تتجنب المهام</div>
+        <div class="option" onclick="selectOption(this, 23, 'd')">ئ) تراقب بصمت</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(23)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer23">
+        <p><strong>الإجابة الصحيحة:</strong> b) تتعاون بفعالية</p>
+        <p><strong>الشرح:</strong></p>
+        <p>أفضل سلوك هو التعاون.</p>
+    </div>
+</div>
+
+<!-- السؤال 24 -->
+<div class="question" id="q24" style="display:none;">
+    <h3>السؤال 24: إذا واجهت تعارضًا في العمل، فإنك:</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 24, 'a')">أ) تتجنب المواجهة</div>
+        <div class="option" onclick="selectOption(this, 24, 'b')">ؤ) تحله بالنقاش</div>
+        <div class="option" onclick="selectOption(this, 24, 'c')">إ) ترفعه للمدير</div>
+        <div class="option" onclick="selectOption(this, 24, 'd')">ئ) تنسحب من المهمة</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(24)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer24">
+        <p><strong>الإجابة الصحيحة:</strong> b) تحله بالنقاش</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الحل بالنقاش هو الأنسب.</p>
+    </div>
+</div>
+
+<!-- السؤال 25 -->
+<div class="question" id="q25" style="display:none;">
+    <h3>السؤال 25: عندما تتلقى ملاحظات نقدية، فإنك:</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 25, 'a')">أ) تتجاهلها</div>
+        <div class="option" onclick="selectOption(this, 25, 'b')">ؤ) تغضب</div>
+        <div class="option" onclick="selectOption(this, 25, 'c')">إ) تحللها وتستفيد</div>
+        <div class="option" onclick="selectOption(this, 25, 'd')">ئ) تجادل</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(25)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer25">
+        <p><strong>الإجابة الصحيحة:</strong> c) تحللها وتستفيد</p>
+        <p><strong>الشرح:</strong></p>
+        <p>ردة الفعل المثالية هي التحليل.</p>
+    </div>
+</div>
+
+<!-- السؤال 26 -->
+<div class="question" id="q26" style="display:none;">
+    <h3>السؤال 26: هل تفضل العمل تحت إشراف دقيق؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 26, 'a')">أ) نعم دائمًا</div>
+        <div class="option" onclick="selectOption(this, 26, 'b')">ؤ) أحيانًا</div>
+        <div class="option" onclick="selectOption(this, 26, 'c')">إ) لا أفضل</div>
+        <div class="option" onclick="selectOption(this, 26, 'd')">ئ) لا فرق لدي</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(26)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer26">
+        <p><strong>الإجابة الصحيحة:</strong> b) أحيانًا</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الأغلب يفضل التوازن.</p>
+    </div>
+</div>
+
+<!-- السؤال 27 -->
+<div class="question" id="q27" style="display:none;">
+    <h3>السؤال 27: ما هو أسلوبك في اتخاذ القرارات؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 27, 'a')">أ) عاطفي</div>
+        <div class="option" onclick="selectOption(this, 27, 'b')">ؤ) منطقي</div>
+        <div class="option" onclick="selectOption(this, 27, 'c')">إ) عشوائي</div>
+        <div class="option" onclick="selectOption(this, 27, 'd')">ئ) تلقائي</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(27)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer27">
+        <p><strong>الإجابة الصحيحة:</strong> b) منطقي</p>
+        <p><strong>الشرح:</strong></p>
+        <p>المنطقي هو الأفضل غالبًا.</p>
+    </div>
+</div>
+
+<!-- السؤال 28 -->
+<div class="question" id="q28" style="display:none;">
+    <h3>السؤال 28: كيف تصف نفسك في بيئة عمل سريعة التغير؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 28, 'a')">أ) مرن</div>
+        <div class="option" onclick="selectOption(this, 28, 'b')">ؤ) قلق</div>
+        <div class="option" onclick="selectOption(this, 28, 'c')">إ) مرتبك</div>
+        <div class="option" onclick="selectOption(this, 28, 'd')">ئ) غير مهتم</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(28)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer28">
+        <p><strong>الإجابة الصحيحة:</strong> a) مرن</p>
+        <p><strong>الشرح:</strong></p>
+        <p>المرونة هي الصفة الإيجابية.</p>
+    </div>
+</div>
+
+<!-- السؤال 29 -->
+<div class="question" id="q29" style="display:none;">
+    <h3>السؤال 29: هل تحب المهام المتكررة؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 29, 'a')">أ) نعم</div>
+        <div class="option" onclick="selectOption(this, 29, 'b')">ؤ) أحيانًا</div>
+        <div class="option" onclick="selectOption(this, 29, 'c')">إ) نادراً</div>
+        <div class="option" onclick="selectOption(this, 29, 'd')">ئ) لا</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(29)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer29">
+        <p><strong>الإجابة الصحيحة:</strong> d) لا</p>
+        <p><strong>الشرح:</strong></p>
+        <p>الإجابة المثالية هي لا.</p>
+    </div>
+</div>
+
+<!-- السؤال 30 -->
+<div class="question" id="q30" style="display:none;">
+    <h3>السؤال 30: في حال فشل مشروعك، كيف تتعامل؟</h3>
+    <p>اختر الإجابة الصحيحة:</p>
+    <div class="options">
+        <div class="option" onclick="selectOption(this, 30, 'a')">أ) تلوم الآخرين</div>
+        <div class="option" onclick="selectOption(this, 30, 'b')">ؤ) تحلل الأسباب</div>
+        <div class="option" onclick="selectOption(this, 30, 'c')">إ) تنسحب</div>
+        <div class="option" onclick="selectOption(this, 30, 'd')">ئ) تتجاهل</div>
+    </div>
+    <button class="show-answer" onclick="showCorrectAnswer(30)">عرض الإجابة الصحيحة</button>
+    <div class="answer" id="answer30">
+        <p><strong>الإجابة الصحيحة:</strong> b) تحلل الأسباب</p>
+        <p><strong>الشرح:</strong></p>
+        <p>تحليل الأسباب أفضل تصرف.</p>
+    </div>
+</div>
+
+        <!-- أزرار التنقل بين الأسئلة -->
+        <div class="navigation-buttons">
+            <button class="nav-button" id="prev-btn" onclick="prevQuestion()" disabled>السابق</button>
+            <button class="nav-button" id="next-btn" onclick="nextQuestion()">التالي</button>
+            <button class="nav-button" id="submit-btn" onclick="submitTest()" style="display:none;">إنهاء الاختبار</button>
+        </div>
+        
+        <!-- نتائج الاختبار -->
+        <div class="results-container" id="results-container">
+            <h2>نتائج الاختبار</h2>
+            <div class="score" id="final-score"></div>
+            <p id="result-message"></p>
+            <button class="print-btn" onclick="window.print()">طباعة النتائج</button>
+        </div>
+    </div>
+
+    <footer>
+        <p> &copy;  | اختبار كورن فيري المتقدم</p>
+    </footer>
+
+    <script>
+        // متغيرات الاختبار
+        let currentQuestion = 1;
+        const totalQuestions = 30;
+        let timeLeft = 30 * 60; // 30 دقيقة بالثواني
+        let timerInterval;
+        let userAnswers = {};
+        const correctAnswers = {
+    1: 'a',
+    2: 'c',
+    3: 'b',
+    4: 'a',
+    5: 'c',
+    6: 'b',
+    7: 'd',
+    8: 'b',
+    9: 'c',
+    10: 'b',
+    11: 'c',
+    12: 'b',
+    13: 'a',
+    14: 'c',
+    15: 'b',
+    16: 'b',
+    17: 'c',
+    18: 'a',
+    19: 'c',
+    20: 'b',
+    21: 'c',
+    22: 'c',
+    23: 'b',
+    24: 'b',
+    25: 'c',
+    26: 'b',
+    27: 'b',
+    28: 'a',
+    29: 'd',
+    30: 'b'
+        };
+        
+        // تهيئة الاختبار
+        function initTest() {
+            showQuestion(1);
+            startTimer();
+            updateProgressBar();
+        }
+        
+        // عرض السؤال الحالي وإخفاء الآخرين
+        function showQuestion(n) {
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById(`q${i}`).style.display = 'none';
+            }
+            document.getElementById(`q${n}`).style.display = 'block';
+            
+            // تحديث أزرار التنقل
+            document.getElementById('prev-btn').disabled = n === 1;
+            document.getElementById('next-btn').style.display = n === totalQuestions ? 'none' : 'block';
+            document.getElementById('submit-btn').style.display = n === totalQuestions ? 'block' : 'none';
+            
+            // إظهار الإجابة المحددة مسبقاً إن وجدت
+            if (userAnswers[n]) {
+                const options = document.querySelectorAll(`#q${n} .option`);
+                options.forEach(opt => {
+                    if (opt.getAttribute('data-option') === userAnswers[n]) {
+                        opt.classList.add('selected');
+                    }
+                });
+            }
+        }
+        
+        // الانتقال للسؤال التالي
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateProgressBar();
+            }
+        }
+        
+        // الانتقال للسؤال السابق
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateProgressBar();
+            }
+        }
+        
+        // تحديد خيار
+        function selectOption(element, questionNum, option) {
+            // إزالة التحديد من جميع خيارات هذا السؤال
+            const options = document.querySelectorAll(`#q${questionNum} .option`);
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // تحديد الخيار المختار
+            element.classList.add('selected');
+            
+            // حفظ الإجابة
+            userAnswers[questionNum] = option;
+        }
+        
+        // عرض الإجابة الصحيحة
+        function showCorrectAnswer(questionNum) {
+            const correctOption = correctAnswers[questionNum];
+            const options = document.querySelectorAll(`#q${questionNum} .option`);
+            
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                
+                if (opt.getAttribute('data-option') === correctOption) {
+                    opt.classList.add('correct');
+                } else if (opt.classList.contains('selected') && opt.getAttribute('data-option') !== correctOption) {
+                    opt.classList.add('incorrect');
+                }
+            });
+            
+            document.getElementById(`answer${questionNum}`).style.display = 'block';
+        }
+        
+        // بدء عداد الوقت
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+            }, 1000);
+        }
+        
+        // تحديث عرض العداد
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            // تغيير اللون عندما يقل الوقت عن 5 دقائق
+            if (timeLeft <= 5 * 60) {
+                document.querySelector('.timer-container').style.backgroundColor = '#e74c3c';
+            }
+        }
+        
+        // تحديث شريط التقدم
+        function updateProgressBar() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+        
+        // إنهاء الاختبار وعرض النتائج
+        function submitTest() {
+            clearInterval(timerInterval);
+            
+            // حساب النتيجة
+            let score = 0;
+            for (const [question, answer] of Object.entries(userAnswers)) {
+                if (answer === correctAnswers[question]) {
+                    score++;
+                }
+            }
+            
+            const percentage = Math.round((score / totalQuestions) * 100);
+            
+            // عرض النتائج
+            document.getElementById('final-score').textContent = `نقاطك: ${score}/${totalQuestions} (${percentage}%)`;
+            
+            let message = '';
+            if (percentage >= 80) {
+                message = 'ممتاز! لديك قدرات عالية جداً.';
+            } else if (percentage >= 60) {
+                message = 'جيد جداً! لديك قدرات فوق المتوسط.';
+            } else if (percentage >= 40) {
+                message = 'مقبول، ولكن هناك مجال للتحسين.';
+            } else {
+                message = 'ضعيف، ننصحك بالمزيد من التدريب.';
+            }
+            
+            document.getElementById('result-message').textContent = message;
+            
+            // إخفاء الأسئلة وإظهار النتائج
+            document.querySelectorAll('.question').forEach(q => q.style.display = 'none');
+            document.querySelector('.navigation-buttons').style.display = 'none';
+            document.getElementById('results-container').style.display = 'block';
+        }
+        
+        // بدء الاختبار عند تحميل الصفحة
+        window.onload = initTest;
+    </script>
+</body>
+</html>
