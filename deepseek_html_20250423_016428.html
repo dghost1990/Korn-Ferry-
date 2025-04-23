@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TOEFL ITP Test</title>
+<style>
+        /* تنسيق رأس الصفحة - معدل */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 10px;
+            animation: bounceIn 1s ease-out;
+        }
+        
+        .logo {
+            height: 80px;
+            width: auto;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2)) brightness(1.05);
+            border-radius: 12px;
+            padding: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .logo:hover {
+            transform: scale(1.08) rotate(2deg);
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3)) contrast(1.1);
+        }
+        
+        /* تأثير الارتداد */
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* تنسيق المؤقت */
+        .timer-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        #timer-container {
+            text-align: center;
+            padding: 10px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border: 2px solid #006400;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        #timer {
+            font-size: 28px;
+            font-weight: bold;
+            color: #006400;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .timer-buttons {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .timer-btn {
+            padding: 8px 15px;
+            margin: 0 5px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .timer-btn:hover {
+            background: #2980b9;
+        }
+        
+        .timer-btn.stop {
+            background: #e74c3c;
+        }
+        
+        .timer-btn.stop:hover {
+            background: #c0392b;
+        }
+        
+        /* باقي التنسيقات */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        h2 {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        
+        .section-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .options {
+            margin-right: 20px;
+        }
+        
+        .option {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        .option:hover {
+            background: #e3f2fd;
+        }
+        
+        input[type="radio"] {
+            margin-left: 10px;
+        }
+        
+        button {
+            display: block;
+            width: 200px;
+            padding: 12px;
+            margin: 30px auto;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        #result {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            background: #f8f9fa;
+        }
+        
+        .correct {
+            color: #2e7d32;
+        }
+        
+        .wrong {
+            color: #c62828;
+        }
+        
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            border-right: 3px solid #4caf50;
+        }
+        
+        .show-explanation {
+            color: #0277bd;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .show-explanation:hover {
+            text-decoration: underline;
+        }
+        
+        .reading-passage {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffa000;
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .tab button {
+            float: right;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 16px;
+            transition: 0.3s;
+            font-size: 14px;
+            width: auto;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        
+        .tab button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            animation: fadeEffect 1s;
+        }
+        
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        
+        .tts-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .play-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+            width: 150px;
+        }
+        
+        .play-btn:hover {
+            background: #3367d6;
+        }
+        
+        .hidden-audio-text {
+            display: none;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .control-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: #f1f1f1;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        
+        /* تنسيقات جديدة */
+        .score-section {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+    
+
+    body, h1, h2, h3, h4, h5, h6, p, div, button {
+        font-family: 'Cairo', 'Roboto', Arial, sans-serif;
+    }
+    
+    #info {
+        direction: rtl;
+        text-align: right;
+    }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Cairo&amp;family=Roboto&amp;display=swap" rel="stylesheet"/><style>
+@media (max-width: 768px) {
+    #info img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+    #info img[src='https://i.postimg.cc/R6Xj8PRc/logo.png'] {
+        width: auto;  /* استبعاد صورة اللوقو من التعديل */
+    }
+}
+</style><style>
+@media (max-width: 768px) {
+    #info img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+    #info img[src='https://i.postimg.cc/R6Xj8PRc/logo.png'] {
+        width: auto;  /* استبعاد صورة اللوقو */
+    }
+    #info img[src='https://i.postimg.cc/hjwTddfk/9.jpg'] {
+        width: auto;  /* استبعاد الصورة التاسعة */
+    }
+}
+</style><style>
+#info img {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+</style><style>
+@media (max-width: 768px) {
+    #info img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+    #info img[src='https://i.postimg.cc/R6Xj8PRc/logo.png'] {
+        width: auto;  /* استبعاد صورة اللوقو */
+    }
+    #info img[src='https://i.postimg.cc/hjwTddfk/9.jpg'] {
+        width: auto;  /* استبعاد الصورة التاسعة */
+    }
+}
+</style><style>
+@media (max-width: 768px) {
+    #info img[src='https://i.postimg.cc/hjwTddfk/9.jpg'] {
+        width: 100%;  /* فقط هذه الصورة ستكون متجاوبة */
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+}
+</style></head>
+<body>
+<div class="container">
+<!-- رأس الصفحة مع الشعار والمؤقت -->
+<div class="header">
+<div class="logo-container">
+<img alt="شعار اختبار التوفل" class="logo" src="https://i.postimg.cc/R6Xj8PRc/logo.png" style=""/>
+</div>
+<div class="timer-controls">
+<div id="timer-container">
+<div id="timer">00:00:00</div>
+</div>
+<div class="timer-buttons">
+<button class="timer-btn" onclick="startTimer()">بدء</button>
+<button class="timer-btn stop" onclick="stopTimer()">إيقاف</button>
+</div>
+</div>
+</div>
+<h1>TOEFL ITP Test</h1>
+<div class="tab">
+<button class="tablinks active" onclick="openSection(event, 'structure')">Structure (120 سؤالاً)</button>
+<button class="tablinks" onclick="openSection(event, 'reading')">Reading (20 سؤالاً)</button>
+<button class="tablinks" onclick="openSection(event, 'listening')">Listening (10 أسئلة)</button>
+<button class="tablinks" onclick="openSection(event, 'info')">شرح ومعلومات</button>
+<button class="tablinks" onclick="openSection(event, 'kornferry')">اختبار Korn-Ferry (40 سؤالاً)</button>
+</div>
+
+<!-- قسم Structure -->
+<div class="tabcontent" id="structure" style="display: block;">
+<h2>القسم الأول: Structure and Written Expression</h2>
+<div class="section-info">
+<p>اختر الإجابة الصحيحة لاستكمال الجملة أو تصحيح الخطأ النحوي.</p>
+</div>
+<div id="structure-container"></div>
+</div>
+
+<!-- قسم Reading -->
+<div class="tabcontent" id="reading">
+<h2>القسم الثاني: Reading Comprehension</h2>
+<div class="section-info">
+<p>اقرأ النصوص التالية ثم اختر الإجابة الصحيحة للأسئلة.</p>
+</div>
+<div id="reading-container"></div>
+</div>
+
+<!-- قسم Listening -->
+<div class="tabcontent" id="listening">
+<h2>القسم الثالث: Listening Comprehension</h2>
+<div class="section-info">
+<p>انقر على زر التشغيل للاستماع إلى كل مقطع ثم اختر الإجابة الصحيحة.</p>
+</div>
+<div id="listening-container"></div>
+</div>
+
+<!-- قسم المعلومات -->
+<div class="tabcontent" id="info">
+<!-- محتوى قسم المعلومات هنا -->
+</div>
+
+<!-- قسم Korn-Ferry الجديد -->
+<div class="tabcontent" id="kornferry">
+<h2>اختبار Korn-Ferry</h2>
+<div class="section-info">
+<p>اختبار كفاءات لقياس المهارات القيادية والتحليلية (لا يدخل في نتيجة TOEFL).</p>
+</div>
+<div id="kornferry-container"></div>
+<button onclick="calculateKornFerryScore()">حساب نتيجة Korn-Ferry</button>
+<div id="kornferry-result"></div>
+</div>
+
+<button onclick="calculateScore()">عرض النتيجة النهائية</button>
+<div id="result"></div>
+</div>
+
+<script>
+        // متغيرات المؤقت
+        let seconds = 0;
+        let minutes = 0;
+        let hours = 0;
+        let timerInterval;
+        let timerRunning = false;
+        
+        // دالة تحديث المؤقت
+        function updateTimer() {
+            seconds++;
+            
+            if (seconds >= 60) {
+                seconds = 0;
+                minutes++;
+            }
+            
+            if (minutes >= 60) {
+                minutes = 0;
+                hours++;
+            }
+            
+            document.getElementById('timer').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            if (!timerRunning) {
+                timerInterval = setInterval(updateTimer, 1000);
+                timerRunning = true;
+                document.getElementById('timer').style.color = '#006400';
+            }
+        }
+        
+        // إيقاف المؤقت
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            document.getElementById('timer').style.color = '#8b0000';
+        }
+
+        // Structure and Written Expression (120 سؤالاً)
+        const structureQuestions = [
+            // ... (أسئلة Structure السابقة هنا)
+        ];
+
+        // Reading Comprehension (20 سؤالاً)
+        const readingData = [
+            // ... (أسئلة Reading السابقة هنا)
+        ];
+
+        // Listening Comprehension (10 أسئلة)
+        const listeningQuestions = [
+            // ... (أسئلة Listening السابقة هنا)
+        ];
+
+        // أسئلة اختبار Korn-Ferry (40 سؤالاً)
+        const kornFerryQuestions = [
+            {
+                question: "1. عند مواجهة مشكلة معقدة، ما هو أول شيء تقوم به؟",
+                options: [
+                    "A) تجمع أكبر قدر من المعلومات حول المشكلة",
+                    "B) تبحث عن حلول سريعة ومباشرة",
+                    "C) تستشير زملاءك للحصول على آرائهم",
+                    "D) تحلل المشكلة إلى أجزاء أصغر لفهمها بشكل أفضل"
+                ],
+                correctAnswer: 3,
+                explanation: "الإجابة الصحيحة: D) تحلل المشكلة إلى أجزاء أصغر لفهمها بشكل أفضل<br><br>الشرح: هذا النهج يظهر القدرة على التحليل المنطقي والتفكير المنظم، وهي مهارات مهمة في اختبار Korn-Ferry."
+            },
+            {
+                question: "2. كيف تتعامل مع المواقف التي تحتاج إلى اتخاذ قرار سريع؟",
+                options: [
+                    "A) أتخذ القرار بناءً على خبرتي السريعة",
+                    "B) أطلب المزيد من الوقت للتفكير",
+                    "C) أستشير رئيسي في العمل قبل اتخاذ أي قرار",
+                    "D) أحلل الخيارات المتاحة بسرعة ثم أتخذ القرار"
+                ],
+                correctAnswer: 3,
+                explanation: "الإجابة الصحيحة: D) أحلل الخيارات المتاحة بسرعة ثم أتخذ القرار<br><br>الشرح: القدرة على تحليل سريع واتخاذ قرار حاسم هي سمة قيادية مهمة."
+            },
+            {
+                question: "3. عند العمل في فريق، ما هو دورك المفضل؟",
+                options: [
+                    "A) المنسق الذي ينظم عمل الفريق",
+                    "B) المحفز الذي يشجع أعضاء الفريق",
+                    "C) الخبير الذي يقدم الحلول التقنية",
+                    "D) القائد الذي يتخذ القرارات النهائية"
+                ],
+                correctAnswer: 0,
+                explanation: "الإجابة الصحيحة: A) المنسق الذي ينظم عمل الفريق<br><br>الشرح: اختبار Korn-Ferry يقيم القدرة على التنسيق والعمل الجماعي."
+            },
+            {
+                question: "4. كيف تتعامل مع التغييرات المفاجئة في خطة العمل؟",
+                options: [
+                    "A) أتقبل التغيير وأتكيف بسرعة",
+                    "B) أشعر بالإحباط مؤقتاً ثم أتكيف",
+                    "C) أصر على تنفيذ الخطة الأصلية",
+                    "D) أطلب من الآخرين التكيف بدلاً مني"
+                ],
+                correctAnswer: 0,
+                explanation: "الإجابة الصحيحة: A) أتقبل التغيير وأتكيف بسرعة<br><br>الشرح: المرونة والقدرة على التكيف من المهارات الأساسية التي يقيسها الاختبار."
+            },
+            {
+                question: "5. ما هو نهجك في حل النزاعات بين أعضاء الفريق؟",
+                options: [
+                    "A) أستمع لجميع الأطراف ثم أوجد حلولاً وسطية",
+                    "B) أتجنب التدخل في النزاعات",
+                    "C) أفرض حلولي الشخصية",
+                    "D) أطلب من المدير حل النزاع"
+                ],
+                correctAnswer: 0,
+                explanation: "الإجابة الصحيحة: A) أستمع لجميع الأطراف ثم أوجد حلولاً وسطية<br><br>الشرح: مهارات حل النزاعات بشكل بناء هي من مؤشرات القيادة الفعالة."
+            }
+            // يمكن إضافة المزيد من الأسئلة هنا
+        ];
+
+        // دالة تحويل النص إلى كلام
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('عذرًا، هذه الميزة غير مدعومة في متصفحك');
+                return;
+            }
+            
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            
+            // انتظر حتى يتم تحميل الأصوات
+            const speak = () => {
+                const voices = window.speechSynthesis.getVoices();
+                const googleVoice = voices.find(voice => 
+                    voice.lang === 'en-US' && voice.name.includes('Google'));
+                utterance.voice = googleVoice || voices.find(voice => voice.lang === 'en-US');
+                window.speechSynthesis.speak(utterance);
+            };
+            
+            if (speechSynthesis.getVoices().length > 0) {
+                speak();
+            } else {
+                speechSynthesis.onvoiceschanged = speak;
+            }
+        }
+
+        // عرض الأسئلة عند تحميل الصفحة
+        window.onload = function() {
+            displayQuestions();
+            displayKornFerryQuestions();
+            // تحميل الأصوات عند بدء الصفحة
+            if ('speechSynthesis' in window) {
+                speechSynthesis.onvoiceschanged = function() {
+                    console.log("الأصوات جاهزة");
+                };
+            }
+        };
+
+        function displayQuestions() {
+            // ... (دوال عرض الأسئلة السابقة هنا)
+        }
+
+        // دالة لعرض أسئلة Korn-Ferry
+        function displayKornFerryQuestions() {
+            const container = document.getElementById('kornferry-container');
+            kornFerryQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.id = `kornferry-question-${index}`;
+                
+                let optionsHTML = q.options.map((option, i) => `
+                    <div class="option">
+                        <input type="radio" name="kornferry-${index}" id="kornferry-${index}-${i}" value="${i}">
+                        <label for="kornferry-${index}-${i}">${option}</label>
+                    </div>
+                `).join('');
+                
+                questionDiv.innerHTML = `
+                    <p>${q.question}</p>
+                    <div class="options">${optionsHTML}</div>
+                    <span class="show-explanation" onclick="toggleExplanation('kornferry-${index}')">عرض الشرح</span>
+                    <div class="explanation" id="explanation-kornferry-${index}">${q.explanation}</div>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function toggleExplanation(id) {
+            const explanation = document.getElementById(`explanation-${id}`);
+            if (explanation) {
+                explanation.style.display = explanation.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        function openSection(evt, sectionName) {
+            const tabcontent = document.getElementsByClassName('tabcontent');
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = 'none';
+            }
+
+            const tablinks = document.getElementsByClassName('tablinks');
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(' active', '');
+            }
+
+            document.getElementById(sectionName).style.display = 'block';
+            evt.currentTarget.className += ' active';
+        }
+
+        function calculateScore() {
+            // ... (دالة حساب النتيجة السابقة هنا)
+        }
+
+        // دالة لحساب نتيجة Korn-Ferry
+        function calculateKornFerryScore() {
+            let score = 0;
+            
+            kornFerryQuestions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="kornferry-${index}"]:checked`);
+                const questionDiv = document.getElementById(`kornferry-question-${index}`);
+
+                if (selectedOption && parseInt(selectedOption.value) === q.correctAnswer) {
+                    score++;
+                    if (questionDiv) questionDiv.style.borderLeft = '4px solid #2e7d32';
+                } else {
+                    if (questionDiv) questionDiv.style.borderLeft = '4px solid #c62828';
+                }
+                const explanation = document.getElementById(`explanation-kornferry-${index}`);
+                if (explanation) explanation.style.display = 'block';
+            });
+
+            const percentage = (score / kornFerryQuestions.length) * 100;
+            const resultDiv = document.getElementById('kornferry-result');
+            
+            resultDiv.innerHTML = `
+                <h3>نتيجة اختبار Korn-Ferry</h3>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${percentage}%">${percentage.toFixed(1)}%</div>
+                </div>
+                
+                <div class="score-section">
+                    <p>إجمالي النقاط: <strong>${score} / ${kornFerryQuestions.length}</strong></p>
+                    <p>النسبة المئوية: <strong>${percentage.toFixed(1)}%</strong></p>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // جعل الدوال متاحة على النطاق العام
+        window.toggleExplanation = toggleExplanation;
+        window.openSection = openSection;
+        window.calculateScore = calculateScore;
+        window.calculateKornFerryScore = calculateKornFerryScore;
+        window.speakText = speakText;
+        window.startTimer = startTimer;
+        window.stopTimer = stopTimer;
+    </script>
+</body>
+</html>
